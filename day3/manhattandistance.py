@@ -4,14 +4,13 @@ route1_unsplit = "R990,D362,L316,U101,R352,U798,L314,D564,R961,D634,L203,U601,R9
 route2_unsplit = "L995,D598,R577,U346,L797,D375,R621,D709,R781,U55,R965,U327,L479,U148,L334,U93,R644,U632,L557,D136,L690,D548,R982,D703,L971,U399,R600,D785,L504,U984,R18,U190,L755,D737,L787,D921,R303,U513,L544,U954,L814,U239,R550,D458,R518,D538,R362,D350,L103,U17,L362,D480,L80,U639,L361,D75,L356,D849,R635,U633,R934,U351,L314,U960,R657,U802,L687,U385,L558,D984,L996,U765,L147,D366,R908,U981,R44,U336,R396,U85,R819,D582,L21,D920,L627,D103,R922,U195,L412,D385,L159,U446,L152,U400,L303,U549,R734,D709,R661,U430,R177,U857,L53,U555,R35,D919,L163,D630,L162,U259,R46,D89,R965,D410,R37,U39,R621,D606,L816,D659,L668,D418,L775,D911,R296,U488,L129,U869,L455,U663,L942,U813,L274,D677,R161,D338,R455,D580,R976,D984,L336,U742,R334,U130,L210,U523,R958,U177,R126,U469,L513,D14,L772,D423,L369,D661,R167,D449,L685,U871,L930,U630,L54,D581,L921,U839,R782,D844,L581,D995,R110,U365,L594,D595,R391,D298,R297,U469,L148,D34,R5,D609,L654,U172,R940,D858,L682,D92,R395,D683,R947,U311,L850,U151,R452,U641,L599,D640,R86,U584,L518,D597,L724,D282,L691,D957,L119,U30,L8,D514,R237,U599,R775,U413,R802,D132,R925,U133,L980,D981,R272,U632,R995,U427,R770,D722,L817,D609,R590,D799,L699,U923,L881,U893,R79,U327,L405,D669,L702,D612,R895,D132,R420,U958,L955,U993,L817,D492,R453,D342,L575,D253,R97,U54,R456,U748,L912,U661,L987,D182,L816,U218,R933,D797,L207,D71,R546,U578,L894,D536,L253,D525,L164,D673,R784,U915,L774,U586,R733,D80,L510,U449,L403,D915,L612,D325,L470,U179,L460,U405,R297,D803,R637,U893,R565,U952,R550,U936,R378,D932,L669"
 route1 = route1_unsplit.split(',')
 route2 = route2_unsplit.split(',')
-# route1 = ["R10", "U10", "L10", "D10"]
-# route2 = ["U4", "R20"]
+
 
 def getAllPos(route):
     currentPos = (0,0)
     allpos = []
-    route1 = route
-    for i in route1:
+    
+    for i in route:
         if i[0] == "R":
             for j in range(currentPos[0], currentPos[0]+ int(i[1:])+1):
                 allpos.append((j, currentPos[1]))
@@ -27,59 +26,64 @@ def getAllPos(route):
         else:
             for j in range(currentPos[1] - int(i[1:]), currentPos[1]+1):
                 allpos.append((currentPos[0], j))
-            currentPos =  (currentPos[0]- int(i[1:]), currentPos[1])
+            currentPos =  (currentPos[0], currentPos[1]- int(i[1:]))
     return allpos
-allpos = getAllPos(route1)  
-print(allpos)
+allpos = set(getAllPos(route1))  
+allpos2 = set(getAllPos(route2))
+lowest = None
+for i in allpos2:
+    if i in allpos:
+        #print(abs(i[0]) + abs(i[1]))
+        if lowest == None and abs(i[0]) + abs(i[1]) != 0:
+            lowest = abs(i[0]) + abs(i[1])
+        elif  abs(i[0]) + abs(i[1]) < lowest and abs(i[0]) + abs(i[1]) != 0:
+            lowest = abs(i[0]) + abs(i[1])
 
-def getDoubles(route, tocheck): 
-    allpos = tocheck
-    currentPos = (0,0)
-    route2 = route
-    doubles = []
-    for i in route2:
-        if i[0] == "R":
-            for j in range(currentPos[0], currentPos[0]+ int(i[1:])+1):
-                if (j, currentPos[1]) in allpos:
-                    doubles.append((j, currentPos[1]))
-                currentPos =  (j, currentPos[1])
+print(lowest)
 
-        elif i[0] == "L":
-            for j in range(currentPos[0] - int(i[1:]), currentPos[0]+1):
-                if (j, currentPos[1]) in allpos:
-                    doubles.append((j, currentPos[1]))
-                currentPos = (j, currentPos[1])
+# def getDoubles(route, allpos): 
+#     currentPos = (0,0)
+#     doubles = []
+#     for i in route:
+#         currentPosCopy = currentPos
+#         if i[0] == "R":
+#             for j in range(currentPosCopy[0], currentPosCopy[0]+ int(i[1:])+1):
+#                 if (j, currentPos[1]) in allpos:
+#                     doubles.append((j, currentPosCopy[1]))
+#             currentPos =  (currentPos[0]+ int(i[1:]), currentPos[1])
 
-        elif i[0] == "U":
-            for j in range(currentPos[1], currentPos[1]+ int(i[1:])+1):
-                if (currentPos[0],j) in allpos:
-                    doubles.append((currentPos[0],j))
-                currentPos=(currentPos[0],j)
-        else:
-            for j in range(currentPos[1] - int(i[1:]), currentPos[1]+1):
-                if (currentPos[0], j) in allpos:
-                    doubles.append((currentPos[0], j))
-                currentPos=(currentPos[0], j)
-    return doubles
+#         elif i[0] == "L":
+#             for j in range(currentPosCopy[0] - int(i[1:]), currentPosCopy[0]+1):
+#                 if (j, currentPos[1]) in allpos:
+#                     doubles.append((j, currentPosCopy[1]))
+#             currentPos =  (currentPos[0]- int(i[1:]), currentPos[1])
 
-doubles = getDoubles(route2, allpos)
-print(doubles)
+#         elif i[0] == "U":
+#             for j in range(currentPosCopy[1], currentPosCopy[1]+ int(i[1:])+1):
+#                 if (currentPos[0],j) in allpos:
+#                     doubles.append((currentPosCopy[0],j))
+#             currentPos =  (currentPos[0], currentPos[1]+ int(i[1:]))
+        
+#         else:
+#             for j in range(currentPosCopy[1] - int(i[1:]), currentPosCopy[1]+1):
+#                 if (currentPos[0], j) in allpos:
+#                     doubles.append((currentPosCopy[0], j))
+#             currentPos =  (currentPos[0], currentPos[1]- int(i[1:]))
+#     return doubles
+
+# doubles = set(getDoubles(route2, allpos))
 
 
-# def manhattandistance (doubles):
+# def manhattandistance(doubles):
 #     current_best = 'false'
 #     for i in doubles:
 #         if i != (0,0):
 #             if current_best == 'false':
 #                 current_best = abs(i[0]) + abs(i[1])
-
-#             elif (abs(i[0]) + abs(i[1]) < current_best):
+#             elif abs(i[0]) + abs(i[1]) < current_best:
 #                 current_best = abs(i[0]) + abs(i[1])
 #     return current_best
     
-    
-# # print(allpos)
-# # print(currentPos)
-# print(doubles)
+
 # print(manhattandistance(doubles))
 
